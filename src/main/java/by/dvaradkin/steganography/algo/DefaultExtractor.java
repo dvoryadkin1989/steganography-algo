@@ -17,32 +17,32 @@ public class DefaultExtractor implements Extractor {
     @Override
     public byte[] extract(BufferedImage container) {
         int infoLength = extractInfoLength(container);
-        byte[] info = new byte[infoLength];
-        for (int i = META_INFO_LENGTH; i < infoLength; i++) {
-            int x = i % container.getWidth();
-            int y = i / container.getWidth();
-
-            byte extractedByte = extractByte(container.getRGB(x, y));
-            info[i] = extractedByte;
-        }
-        return info;
+        return extractBytes(container, META_INFO_LENGTH, infoLength);
     }
 
     private int extractInfoLength(BufferedImage container) {
-        byte[] lengthBytes = new byte[META_INFO_LENGTH];
-        for (int i = 0; i < META_INFO_LENGTH; i++) {
+        byte[] infoLengthBytes = extractBytes(container, 0, META_INFO_LENGTH);
+        return ByteBuffer.wrap(infoLengthBytes).getInt();
+    }
+
+    private byte[] extractBytes(BufferedImage container, int startIndex, int length) {
+        byte[] info = new byte[length];
+        for (int i = startIndex; i < length; i++) {
             int x = i % container.getWidth();
             int y = i / container.getWidth();
-            lengthBytes[i] = extractByte(container.getRGB(x, y));
+
+            info[i] = extractByte(container.getRGB(x, y));
         }
-        return ByteBuffer.wrap(lengthBytes).getInt();
+        return info;
     }
 
     private byte extractByte(int containerRgb) {
         final Color color = new Color(containerRgb);
         int result = (TWO_BITS & color.getBlue());
+
         result <<= 3;
         result |= (THREE_BITS & color.getGreen());
+
         result <<= 3;
         result |= (THREE_BITS & color.getRed());
 

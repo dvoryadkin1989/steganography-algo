@@ -2,8 +2,6 @@ package by.dvaradkin.steganography;
 
 import by.dvaradkin.steganography.algo.Steganography;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,12 +16,11 @@ import java.io.IOException;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(Application.class);
-
     private static final String EMPTY_CONTAINER_FILE_NAME = "123.bmp";
     private static final String FILLED_CONTAINER_FILE_NAME = "output.bmp";
     private static final String FILE_TO_HIDE_NAME = "info.txt";
     private static final String OUTPUT_FILE_NAME = "output.txt";
+    private static final String IMAGE_FORMAT = "bmp";
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -46,7 +43,7 @@ public class Application implements CommandLineRunner {
             fos.write(extracted);
         }
         try (FileOutputStream fos = new FileOutputStream(FILLED_CONTAINER_FILE_NAME)) {
-            ImageIO.write(container, "bmp", fos);
+            ImageIO.write(container, IMAGE_FORMAT, fos);
         }
     }
 
