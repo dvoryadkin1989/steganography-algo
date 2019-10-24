@@ -1,17 +1,21 @@
 package by.dvaradkin.steganography.algo;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.stereotype.Component;
-
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-
-import static by.dvaradkin.steganography.algo.Constants.THREE_BITS;
-import static by.dvaradkin.steganography.algo.Constants.TWO_BITS;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import by.dvaradkin.steganography.helper.SteganographyHelper;
 
 @Component
 public class DefaultEmbedder implements Embedder {
+
+    private final SteganographyHelper helper;
+
+    @Autowired
+    public DefaultEmbedder(final SteganographyHelper helper) {
+        this.helper = helper;
+    }
 
     @Override
     public BufferedImage embed(BufferedImage container, byte[] info) {
@@ -30,21 +34,9 @@ public class DefaultEmbedder implements Embedder {
             int x = i % container.getWidth();
             int y = i / container.getWidth();
 
-            int rgbWithEmbeddedInfo = embedByte(container.getRGB(x, y), infoWithMeta[i]);
+            int rgbWithEmbeddedInfo = helper.embedByte(container.getRGB(x, y), infoWithMeta[i]);
             container.setRGB(x, y, rgbWithEmbeddedInfo);
         }
     }
 
-    private int embedByte(int containerRgb, byte infoByte) {
-        final Color color = new Color(containerRgb);
-        int result = (~THREE_BITS & color.getRed()) | (THREE_BITS & infoByte);
-        result <<= 8;
-        infoByte >>>= 3;
-        result |= (~THREE_BITS & color.getGreen()) | (THREE_BITS & infoByte);
-        result <<= 8;
-        infoByte >>>= 3;
-        result |= (~TWO_BITS & color.getBlue()) | (TWO_BITS & infoByte);
-        result |= 0xFF_FF_FF_FF << 24;
-        return result;
-    }
 }

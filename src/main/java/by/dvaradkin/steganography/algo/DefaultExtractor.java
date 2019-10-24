@@ -1,18 +1,22 @@
 package by.dvaradkin.steganography.algo;
 
-import org.springframework.stereotype.Component;
-
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-
-import static by.dvaradkin.steganography.algo.Constants.THREE_BITS;
-import static by.dvaradkin.steganography.algo.Constants.TWO_BITS;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import by.dvaradkin.steganography.helper.SteganographyHelper;
 
 @Component
 public class DefaultExtractor implements Extractor {
 
     private static final int META_INFO_LENGTH = 4;
+
+    private final SteganographyHelper helper;
+
+    @Autowired
+    public DefaultExtractor(final SteganographyHelper helper) {
+        this.helper = helper;
+    }
 
     @Override
     public byte[] extract(BufferedImage container) {
@@ -27,25 +31,13 @@ public class DefaultExtractor implements Extractor {
 
     private byte[] extractBytes(BufferedImage container, int startIndex, int length) {
         byte[] info = new byte[length];
-        for (int i = startIndex; i < length; i++) {
+        for (int i = startIndex; i < startIndex + length; i++) {
             int x = i % container.getWidth();
             int y = i / container.getWidth();
 
-            info[i] = extractByte(container.getRGB(x, y));
+            info[i - startIndex] = helper.extractByte(container.getRGB(x, y));
         }
         return info;
     }
 
-    private byte extractByte(int containerRgb) {
-        final Color color = new Color(containerRgb);
-        int result = (TWO_BITS & color.getBlue());
-
-        result <<= 3;
-        result |= (THREE_BITS & color.getGreen());
-
-        result <<= 3;
-        result |= (THREE_BITS & color.getRed());
-
-        return (byte) (result & 0xFF);
-    }
 }

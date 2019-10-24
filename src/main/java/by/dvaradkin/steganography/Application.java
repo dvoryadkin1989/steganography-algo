@@ -18,7 +18,7 @@ public class Application implements CommandLineRunner {
 
     private static final String EMPTY_CONTAINER_FILE_NAME = "123.bmp";
     private static final String FILLED_CONTAINER_FILE_NAME = "output.bmp";
-    private static final String FILE_TO_HIDE_NAME = "info.txt";
+    private static final String FILE_TO_HIDE_NAME = "info_linux.txt";
     private static final String OUTPUT_FILE_NAME = "output.txt";
     private static final String IMAGE_FORMAT = "bmp";
 
